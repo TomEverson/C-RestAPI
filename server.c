@@ -18,11 +18,7 @@ static int request_handler(void *cls, struct MHD_Connection *connection,
     }
     else if (strcmp(url, "/users") == 0)
     {
-        return user_route_handler(connection, method, upload_data);
-    }
-    else
-    {
-        return MHD_NO;
+        return user_route_handler(connection, method, upload_data, upload_data_size, con_cls);
     }
 }
 

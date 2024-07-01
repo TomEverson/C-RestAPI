@@ -27,7 +27,8 @@ void close_database()
     printf("Database closed\n");
 }
 
-int execute_sql_query(struct MHD_Connection *connection, const char *sql)
+int execute_sql_select_query(struct MHD_Connection *connection, const char *sql)
+
 {
     sqlite3_stmt *stmt;
     int rc = sqlite3_prepare_v2(db, sql, -1, &stmt, NULL);
@@ -99,4 +100,26 @@ int execute_sql_query(struct MHD_Connection *connection, const char *sql)
     MHD_destroy_response(response);
 
     return (rc == SQLITE_DONE) ? MHD_YES : MHD_NO;
+}
+
+int execute_sql_insert_query(struct MHD_Connection *connection, const char *sql)
+{
+    char *err_msg = 0;
+    int rc = sqlite3_exec(db, sql, 0, 0, &err_msg);
+
+    if (rc != SQLITE_OK)
+    {
+        fprintf(stderr, "SQL error: %s\n", err_msg);
+        sqlite3_free(err_msg);
+        return MHD_NO;
+    }
+
+    // Create HTTP response indicating success
+    const char *success_message = "{\"status\": \"success\"}";
+    struct MHD_Response *response = MHD_create_response_from_buffer(strlen(success_message), (void *)success_message, MHD_RESPMEM_PERSISTENT);
+    MHD_add_response_header(response, MHD_HTTP_HEADER_CONTENT_TYPE, "application/json");
+    int ret = MHD_queue_response(connection, MHD_HTTP_OK, response);
+    MHD_destroy_response(response);
+
+    return ret;
 }

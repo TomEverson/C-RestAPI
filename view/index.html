@@ -6,6 +6,37 @@
     <title>Rest API Using C</title>
 </head>
 <body>
-    
+    <h1>Harbour Space Students</h1>
+    <ul id="content">
+
+    </ul>
 </body>
+
+
+
+<script>
+
+
+document.addEventListener("DOMContentLoaded", async () => {
+    const content = document.getElementById("content")
+    const req = await fetch("/users")
+    const data = await req.json()
+
+    data.forEach(element => {
+        const liTag = document.createElement("li");
+        liTag.innerHTML = element.name
+        content.appendChild(liTag)
+    });
+
+
+
+
+
+
+    console.log(data)
+
+
+
+})
+</script>
 </html>
